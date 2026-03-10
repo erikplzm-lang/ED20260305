@@ -3,7 +3,7 @@ package jcolonia.daw2025.tablasmvc;
 import java.util.Scanner;
 
 public class VistaGeneral {
-    private Scanner scanner;
+    private static Scanner scanner;
 
     public VistaGeneral() {
         scanner = new Scanner(System.in);
@@ -30,7 +30,7 @@ public class VistaGeneral {
     }
 
     // Pedir número al usuario
-    public int pedirNumero(String texto) {
+    public static int pedirNumero(String texto) {
         System.out.print(texto + ": ");
         return scanner.nextInt();
     }
