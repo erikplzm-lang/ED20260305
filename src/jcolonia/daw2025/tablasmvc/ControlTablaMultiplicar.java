@@ -1,102 +1,93 @@
 package jcolonia.daw2025.tablasmvc;
-/**
-* Núcleo de aplicación de consola de texto con menús. Aplicación
-* de texto usando tablas de multiplicar infantiles clásicas. 
-*/
+
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.Arrays;
+import java.util.List;
+
 public class ControlTablaMultiplicar {
-	/** Formato tipo «printf» para el nombre del archivo de
-	* exportación.
-	*/
-	public static final String FORMATO_RUTA_ARCHIVO_EXPORTACIÓN=
-		"tabla del %02d.txt";
 
-	private static final String OPCIONES_MENÚ_PRINCIPAL = null;
-	
-	/** Tabla de multiplicar activa. */
-	private TablaMultiplicar tabla;
+    public static final String FORMATO_RUTA_ARCHIVO_EXPORTACION =
+            "tabla del %02d.txt";
 
-	public ControlTablaMultiplicar(){
-		init();
-	}
+    private TablaMultiplicar tabla;
 
+    public ControlTablaMultiplicar() {
+        init();
+    }
 
-	/**
-	* Pide al usuario un número y prepara la primera
-	* tabla activa.
-	*/
-	public void init(){
-		cambiarTabla();
-	}
+    private void init() {
+        cambiarTabla(); // inicializa la primera tabla
+    }
 
-	/**
-	* Gestión del menú principal. Desde este menú
-	* se ejecutan las opciones disponibles a elección del usuario.
-	* A la salida del menú se finaliza el programa.
-	*/
-	public void buclePrincipal(){
-		VistaMenú menú;
-		int opción;
-		
-		menú=new VistaMenú();
-		
-		do{
-			menú.mostrarOpciones();
-			opción=menú.pedirOpcion();
-			
-			switch(opción){
-			case 1: // Mostrar tabla
-				mostrarTabla();
-				break;
-			case 2: //Cambiar tabla
-				cambiarTabla();
-				break;
-			case 3: // Exportar tabla
-				exportarTabla();
-				break;
-			case 0: // Salir
-				break;
-			default: // Opciones no implementadas
-				opciónNoDisponible();
-				break;
-			}
-			
-		} while (opción!=0);
-		
-		VistaGeneral.mostrarAviso("FIN");
-		
-	}
-	
-	/**
-	* Muestra por pantalla -envía a la salida estándar-
-	* los productos correspondientes a la tabla activa.
-	*/
-	private void mostrarTabla(){}
-	
-	/**
-	* Cambia la tabla activa por otra elegida por el usuario.
-	*/
-	private void cambiarTabla(){
-		int n = 0;
-		
-		VistaGeneral.pedirNumero("Introduzca el número para la tabla");
-		
-		tabla=new TablaMultiplicar(n);
-		tabla.generarTabla();
-	}
+    private void cambiarTabla() {
+        try {
+            int n = VistaGeneral.pedirNumero("Introduzca el número para la tabla");
 
-	/**
-	* Envía a un archivo
-	* los productos correspondientes a la tabla activa.
-	*/
-	private void exportarTabla(){}
-	
-	/**
-	 * Muestra un mensaje de aviso indicando que 
-	 * la opción elegida no está disponible.
-	*/
-	private void opciónNoDisponible(){}
+            // Crear tabla; el constructor lanza ExcepcionES si el número es inválido
+            tabla = new TablaMultiplicar(n);
 
+            tabla.generarTabla();
 
+        } catch (ExcepcionES e) {
+            System.out.println("Error: " + e.getMessage());
+        }
+    }
+    
 
+    public void buclePrincipal() {
 
+        List<String> opciones = Arrays.asList(
+                "Salir",
+                "Mostrar tabla",
+                "Cambiar tabla",
+                "Exportar tabla"
+        );
+
+        VistaMenú menu = new VistaMenú("MENÚ PRINCIPAL", opciones);
+        int opcion;
+
+        do {
+            menu.mostrarTitulo();
+            menu.mostrarOpciones();
+            opcion = menu.pedirOpcion();
+
+            switch (opcion) {
+                case 1 -> mostrarTabla();
+                case 2 -> cambiarTabla();
+                case 3 -> exportarTabla();
+                case 0 -> {}
+                default -> opcionNoDisponible();
+            }
+
+        } while (opcion != 0);
+
+        VistaGeneral.mostrarAviso("FIN");
+    }
+
+    private void mostrarTabla() {
+        System.out.println("\n" + tabla);
+    }
+
+    private void exportarTabla() {
+        try {
+            String nombreArchivo = String.format(FORMATO_RUTA_ARCHIVO_EXPORTACION,
+                    VistaGeneral.pedirNumero("Número de tabla a exportar"));
+
+            try (PrintWriter salida = new PrintWriter(new FileWriter(nombreArchivo))) {
+                for (String linea : tabla.toListaExportacion()) {
+                    salida.println(linea);
+                }
+            }
+
+            System.out.println("Tabla exportada correctamente.");
+
+        } catch (Exception e) {
+            System.out.println("Error al exportar: " + e.getMessage());
+        }
+    }
+
+    private void opcionNoDisponible() {
+        VistaGeneral.mostrarAviso("Opción no disponible");
+    }
 }
