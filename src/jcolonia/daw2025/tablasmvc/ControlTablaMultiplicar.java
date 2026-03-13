@@ -70,23 +70,29 @@ public class ControlTablaMultiplicar {
     }
 
     private void exportarTabla() {
-        try {
-            String nombreArchivo = String.format(FORMATO_RUTA_ARCHIVO_EXPORTACION,
-                    VistaGeneral.pedirNumero("Número de tabla a exportar"));
 
-            try (PrintWriter salida = new PrintWriter(new FileWriter(nombreArchivo))) {
-                for (String linea : tabla.toListaExportacion()) {
-                    salida.println(linea);
-                }
+        try {
+
+            int n = VistaGeneral.pedirNumero("Número de tabla a exportar");
+
+            String nombreArchivo = String.format(FORMATO_RUTA_ARCHIVO_EXPORTACION, n);
+
+            PrintWriter salida = new PrintWriter(new FileWriter(nombreArchivo));
+
+            for (String linea : tabla.toListaExportacion()) {
+                salida.println(linea);
             }
+
+            salida.close();
 
             System.out.println("Tabla exportada correctamente.");
 
         } catch (Exception e) {
-            System.out.println("Error al exportar: " + e.getMessage());
+
+            System.out.println("Error al exportar la tabla.");
+
         }
     }
-
     private void opcionNoDisponible() {
         VistaGeneral.mostrarAviso("Opción no disponible");
     }
